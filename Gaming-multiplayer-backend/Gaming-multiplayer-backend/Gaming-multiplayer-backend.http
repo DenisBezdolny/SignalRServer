@@ -1,0 +1,6 @@
+@Gaming_multiplayer_backend_HostAddress = http://localhost:5194
+
+GET {{Gaming_multiplayer_backend_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

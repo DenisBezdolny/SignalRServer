@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.12.35521.163 d17.12
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Gaming-multiplayer-backend", "Gaming-multiplayer-backend\Gaming-multiplayer-backend.csproj", "{ACFF7D55-7EA6-4114-BC57-4384E4D693D9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GMB.BLL", "GMB.BLL\GMB.BLL.csproj", "{AEF527C7-5CBB-4753-8325-91D5689FB52D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GMB.Domain", "GMB.Domain\GMB.Domain.csproj", "{9A9C03C3-E67D-48EF-B76B-0645F2EC85A2}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{ACFF7D55-7EA6-4114-BC57-4384E4D693D9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{ACFF7D55-7EA6-4114-BC57-4384E4D693D9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{ACFF7D55-7EA6-4114-BC57-4384E4D693D9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{ACFF7D55-7EA6-4114-BC57-4384E4D693D9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AEF527C7-5CBB-4753-8325-91D5689FB52D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AEF527C7-5CBB-4753-8325-91D5689FB52D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AEF527C7-5CBB-4753-8325-91D5689FB52D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AEF527C7-5CBB-4753-8325-91D5689FB52D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9A9C03C3-E67D-48EF-B76B-0645F2EC85A2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9A9C03C3-E67D-48EF-B76B-0645F2EC85A2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9A9C03C3-E67D-48EF-B76B-0645F2EC85A2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9A9C03C3-E67D-48EF-B76B-0645F2EC85A2}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
