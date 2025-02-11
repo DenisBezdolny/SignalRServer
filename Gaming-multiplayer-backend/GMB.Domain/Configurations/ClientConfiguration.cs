@@ -23,14 +23,18 @@ namespace GMB.Domain.Configurations
 
             builder.Property(c => c.PublicPort);
 
+            builder.Property(c => c.JoinedAt)
+                   .HasColumnType("timestamp with time zone")
+                   .IsRequired(false);
+
             builder.HasIndex(c => c.ConnectionId)
                    .HasDatabaseName("IX_Client_ConnectionId")
                    .IsUnique();
 
-            builder.HasOne(c => c.Room) 
+            builder.HasOne(c => c.Room)
                    .WithMany(r => r.Clients)
                    .HasForeignKey(c => c.RoomId)
-                   .OnDelete(DeleteBehavior.Cascade); 
+                   .OnDelete(DeleteBehavior.Cascade);
         }
     }
 }
