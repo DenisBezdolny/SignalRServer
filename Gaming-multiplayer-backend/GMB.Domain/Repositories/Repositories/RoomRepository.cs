@@ -1,6 +1,5 @@
 ﻿using GMB.Domain.Entities;
-using GMB.Domain.Repositories.Interfaces;
-using GMB.Domain.Repositories.Reposytories; // (Note: Check the namespace spelling if needed)
+using GMB.Domain.Repositories.Interfaces; 
 using Microsoft.EntityFrameworkCore;
 
 namespace GMB.Domain.Repositories.Repositories
@@ -45,11 +44,13 @@ namespace GMB.Domain.Repositories.Repositories
         /// <returns>
         /// A collection of active <see cref="Room"/> entities.
         /// </returns>
-        public async Task<IEnumerable<Room>> GetActiveRoomsAsync(int maxPlayers)
+        public async Task<IEnumerable<Room>> GetActiveRoomsAsync(int maxPlayers, bool isPrivate = false)
         {
             return await _dbContext.Rooms
                 .Include(r => r.Clients)
-                .Where(r => r.Clients.Count < maxPlayers)
+                .Where(r => r.IsPrivate == isPrivate
+                         && r.MaxPlayers <= maxPlayers        
+                         && r.Clients.Count < r.MaxPlayers)     
                 .OrderBy(r => r.Clients.Count)
                 .ToListAsync();
         }

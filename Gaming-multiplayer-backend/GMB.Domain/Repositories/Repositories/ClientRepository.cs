@@ -1,6 +1,6 @@
 ﻿using GMB.Domain.Entities;
 using GMB.Domain.Repositories.Interfaces;
-using GMB.Domain.Repositories.Reposytories;
+using GMB.Domain.Repositories.Repositories;
 using Microsoft.EntityFrameworkCore;
 
 namespace GMB.Domain.Repositories.Repositories

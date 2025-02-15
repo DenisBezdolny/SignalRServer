@@ -3,8 +3,7 @@ using GMB.BLL.Contracts;                                 // Business logic layer
 using GMB.BLL.Services;                                  // Business logic layer service implementations
 using GMB.Domain.Repositories.Interfaces;                // Domain repository interfaces
 using GMB.Domain.Repositories.Repositories;              // Domain repository concrete implementations
-using GMB.Domain.Repositories.Reposytories;              // (Possibly a duplicate or alternative repository implementation)
-
+            
 namespace Gaming_multiplayer_backend.Extensions
 {
     // This static class provides an extension method to register application services

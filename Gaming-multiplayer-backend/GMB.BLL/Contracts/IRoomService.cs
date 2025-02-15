@@ -3,76 +3,90 @@
 namespace GMB.BLL.Contracts
 {
     /// <summary>
-    /// Provides operations for managing room entities and room assignments.
+    /// Defines operations for managing room entities and handling room assignments.
+    /// This includes creating, retrieving, updating, and deleting rooms,
+    /// as well as handling room join operations (both by code and random assignment).
     /// </summary>
     public interface IRoomService
     {
         /// <summary>
-        /// Retrieves all rooms.
+        /// Retrieves all rooms from the data store.
         /// </summary>
-        /// <returns>A collection of all rooms.</returns>
+        /// <returns>A collection of all <see cref="Room"/> objects.</returns>
         Task<IEnumerable<Room>> GetAllRoomsAsync();
 
         /// <summary>
         /// Retrieves a room by its unique identifier.
         /// </summary>
-        /// <param name="id">The unique identifier of the room.</param>
-        /// <returns>The room if found; otherwise, null.</returns>
+        /// <param name="id">The unique identifier (GUID) of the room.</param>
+        /// <returns>The <see cref="Room"/> object if found; otherwise, null.</returns>
         Task<Room?> GetRoomByIdAsync(Guid id);
 
         /// <summary>
-        /// Retrieves a room by its unique room code.
+        /// Retrieves a room by its room code.
         /// </summary>
         /// <param name="code">The room code.</param>
-        /// <returns>The room if found; otherwise, null.</returns>
+        /// <returns>The <see cref="Room"/> object if found; otherwise, null.</returns>
         Task<Room?> GetRoomByCodeAsync(string code);
 
         /// <summary>
-        /// Adds a new room.
+        /// Updates an existing room with new information.
         /// </summary>
-        /// <param name="room">The room to add.</param>
-        Task AddRoomAsync(Room room);
-
-        /// <summary>
-        /// Updates an existing room.
-        /// </summary>
-        /// <param name="room">The room with updated information.</param>
+        /// <param name="room">The <see cref="Room"/> object containing updated data.</param>
         Task UpdateRoomAsync(Room room);
 
         /// <summary>
-        /// Deletes a room by its unique identifier.
+        /// Deletes a room from the data store using its unique identifier.
         /// </summary>
         /// <param name="id">The unique identifier of the room to delete.</param>
         Task DeleteRoomAsync(Guid id);
 
         /// <summary>
-        /// Retrieves all active rooms.
+        /// Retrieves all active rooms (i.e. rooms that are currently marked as active).
         /// </summary>
-        /// <returns>A collection of active rooms.</returns>
+        /// <returns>A collection of active <see cref="Room"/> objects.</returns>
         Task<IEnumerable<Room>> GetActiveRoomsAsync();
 
         /// <summary>
-        /// Retrieves the room that the specified client is in.
+        /// Retrieves the room in which the specified client is currently present.
         /// </summary>
-        /// <param name="client">The client.</param>
-        /// <returns>The room if the client is found in one; otherwise, null.</returns>
+        /// <param name="client">The <see cref="Client"/> object representing the player.</param>
+        /// <returns>The <see cref="Room"/> if the client is in one; otherwise, null.</returns>
         Task<Room?> GetRoomByClientAsync(Client client);
 
         /// <summary>
-        /// Assigns a player to a room. If no available room exists, a new room is created.
+        /// Allows a client to join a room identified by its code, if the room exists and has available space.
         /// </summary>
-        /// <param name="client">The client to assign.</param>
-        /// <param name="maxRoomSize">The maximum number of players allowed in a room.</param>
-        /// <returns>The room to which the client was assigned, or null if the room is full.</returns>
-        Task<Room?> AssignPlayerToRoomAsync(Client client, int maxRoomSize);
+        /// <param name="code">The room code to join.</param>
+        /// <param name="client">The <see cref="Client"/> object representing the player attempting to join.</param>
+        /// <param name="maxRoomSize">The maximum number of players allowed in the room.</param>
+        /// <returns>
+        /// The <see cref="Room"/> object if the client successfully joins; 
+        /// otherwise, null (e.g., if the room is full or inactive).
+        /// </returns>
+        Task<Room?> JoinRoomByCodeAsync(string code, Client client, int maxRoomSize);
 
         /// <summary>
-        /// Allows a client to join a room by its code if there is available space.
+        /// Retrieves an active non-private room that has available space for the specified client.
+        /// If no such room exists, a new room is created.
         /// </summary>
-        /// <param name="code">The room code.</param>
-        /// <param name="client">The client attempting to join.</param>
+        /// <param name="client">The <see cref="Client"/> object representing the player.</param>
         /// <param name="maxRoomSize">The maximum number of players allowed in the room.</param>
-        /// <returns>The room if the client successfully joins; otherwise, null.</returns>
-        Task<Room?> JoinRoomByCodeAsync(string code, Client client, int maxRoomSize);
+        /// <returns>
+        /// An active non-private <see cref="Room"/> if available or successfully created; 
+        /// otherwise, null if the room is full.
+        /// </returns>
+        Task<Room?> GetActiveNonPrivateRoom(Client client, int maxRoomSize);
+
+        /// <summary>
+        /// Creates a new private room for a client.
+        /// </summary>
+        /// <param name="client">The <see cref="Client"/> object for whom the private room is created.</param>
+        /// <param name="maxRoomSize">The maximum number of players allowed in the room.</param>
+        /// <returns>
+        /// The newly created private <see cref="Room"/>; 
+        /// otherwise, null if the room could not be created.
+        /// </returns>
+        Task<Room?> CreatePrivateRoomAsync(Client client, int maxRoomSize);
     }
 }

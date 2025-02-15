@@ -1,4 +1,5 @@
 ﻿using GMB.BLL.Contracts;                         // Interfaces for business logic services.
+using GMB.Domain.Entities;
 using GMB.Domain.Repositories.Interfaces;        // Interfaces for repositories that interact with data storage.
 
 namespace GMB.BLL.Services

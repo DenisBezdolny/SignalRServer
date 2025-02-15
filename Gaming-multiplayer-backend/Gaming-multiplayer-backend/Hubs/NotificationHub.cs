@@ -1,6 +1,5 @@
 ﻿using Microsoft.AspNetCore.SignalR;
 using GMB.BLL.Contracts;
-using GMB.Domain.Entities;
 using System.Collections.Concurrent;
 
 namespace Gaming_multiplayer_backend.Hubs
@@ -15,15 +14,15 @@ namespace Gaming_multiplayer_backend.Hubs
         private readonly IRoomService _roomService;
         private readonly IClientService _clientService;
         private readonly ILogger<NotificationHub> _logger;
+        private readonly IConfiguration _configuration;
 
         // Dictionaries to track connected clients and their connection times.
         private static readonly ConcurrentDictionary<string, string> ConnectedClients = new();
-        private static readonly ConcurrentDictionary<string, DateTime> ConnectedUsers = new();
 
         // Constants for the STUN and TURN server addresses.
-        // (These could be moved to configuration.)
-        private const string StunServer = "stun.l.google.com:19302";
-        private const string TurnServer = "turn:my-turn-server.com";
+        // (Fetch from appsettings)
+        private string StunServer => _configuration.GetValue<string>("WebRTC:StunServer");
+        private string TurnServer => _configuration.GetValue<string>("WebRTC:TurnServer"); 
 
         /// <summary>
         /// Constructor for NotificationHub.
@@ -31,11 +30,12 @@ namespace Gaming_multiplayer_backend.Hubs
         /// <param name="roomService">Service to manage room-related operations.</param>
         /// <param name="clientService">Service to manage client-related operations.</param>
         /// <param name="logger">Logger instance for logging messages.</param>
-        public NotificationHub(IRoomService roomService, IClientService clientService, ILogger<NotificationHub> logger)
+        public NotificationHub(IRoomService roomService, IClientService clientService, ILogger<NotificationHub> logger, IConfiguration configuration)
         {
             _roomService = roomService;
             _clientService = clientService;
             _logger = logger;
+            _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
         }
 
         /// <summary>
@@ -92,13 +92,14 @@ namespace Gaming_multiplayer_backend.Hubs
         /// <param name="maxRoomSize">The maximum allowed room size.</param>
         public async Task JoinRandomRoom(int maxRoomSize)
         {
+
             string connectionId = Context.ConnectionId;
 
             // Ensure the client exists or create a new one.
             var client = await _clientService.EnsureClientExistsAsync(connectionId);
 
             // Attempt to assign the client to an active room.
-            var assignedRoom = await _roomService.AssignPlayerToRoomAsync(client, maxRoomSize);
+            var assignedRoom = await _roomService.GetActiveNonPrivateRoom(client, maxRoomSize);
             if (assignedRoom != null)
             {
                 // Record the join time.
@@ -129,6 +130,62 @@ namespace Gaming_multiplayer_backend.Hubs
             else
             {
                 // If no active room is available, send an error message to the client.
+                await Clients.Caller.SendAsync("Error", "Unable to join a random room. No active rooms available.");
+            }
+        }
+
+        /// <summary>
+        /// Creates a new private room for the client.
+        /// </summary>
+        /// <param name="maxRoomSize">The maximum number of players allowed in the room.</param>
+        public async Task CreatePrivateRoom(int maxRoomSize)
+        {
+            // Get the connection ID of the current client from the SignalR context.
+            string connectionId = Context.ConnectionId;
+
+            // Ensure that a client record exists for this connection.
+            // If not, a new client is created with default values.
+            var client = await _clientService.EnsureClientExistsAsync(connectionId);
+
+            // Create a new private room for this client.
+            // The CreatePrivateRoomAsync method returns the newly created room.
+            var assignedRoom = await _roomService.CreatePrivateRoomAsync(client, maxRoomSize);
+
+            if (assignedRoom != null)
+            {
+                // Record the time when the client joined the room.
+                client.JoinedAt = DateTime.UtcNow;
+                // Update the client's record in the data store.
+                await _clientService.UpdateClientAsync(client);
+
+                // Add the client to the SignalR group corresponding to the room code.
+                await Groups.AddToGroupAsync(connectionId, assignedRoom.Code);
+
+                // Notify all clients in the room that this client has joined,
+                // by sending a system message to the room group.
+                await Clients.Group(assignedRoom.Code)
+                             .SendAsync("ReceiveMessage", "System", $"{client.Name} joined random room {assignedRoom.Code}");
+
+                // Log the event that the client has joined the room.
+                _logger.LogInformation("Sending UpdateRoomParticipants event for room {RoomCode}", assignedRoom.Code);
+
+                // Update all clients in the room with the new list of participants.
+                // The list includes each participant's connection ID, name, public IP, and public port.
+                await Clients.Group(assignedRoom.Code)
+                             .SendAsync("updateroomparticipants", assignedRoom.Clients.Select(c => new {
+                                 id = c.ConnectionId,
+                                 name = c.Name,
+                                 publicIp = c.PublicIp, // Public IP of the client
+                                 publicPort = c.PublicPort // Public port of the client
+                             }).ToList());
+
+                // Send a welcome message directly to the caller (the client who created the room).
+                await Clients.Caller.SendAsync("ReceiveMessage", "System", $"Welcome to room {assignedRoom.Code}.");
+            }
+            else
+            {
+                // If for some reason a room could not be created or joined,
+                // send an error message back to the caller.
                 await Clients.Caller.SendAsync("Error", "Unable to join a random room. No active rooms available.");
             }
         }

@@ -1,7 +1,7 @@
 ﻿using GMB.Domain.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
-namespace GMB.Domain.Repositories.Reposytories
+namespace GMB.Domain.Repositories.Repositories
 {
     /// <summary>
     /// Provides a generic repository implementation for basic CRUD operations on entities of type T.

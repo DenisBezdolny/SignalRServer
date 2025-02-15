@@ -1,7 +1,6 @@
 ﻿using GMB.Domain.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using System.Reflection.Emit;
 
 namespace GMB.Domain.Configurations
 {
@@ -20,6 +19,9 @@ namespace GMB.Domain.Configurations
                    .IsUnique(); 
 
             builder.Property(r => r.MaxPlayers)
+                   .IsRequired();
+
+            builder.Property(r => r.IsPrivate) 
                    .IsRequired();
 
             builder.Property(r => r.IsActive)

@@ -28,6 +28,11 @@ namespace GMB.Domain.Entities
         public List<Client> Clients { get; set; } = new();
 
         /// <summary>
+        /// Gets or sets a value indicating whether the room is currently private.
+        /// </summary> 
+        public bool IsPrivate { get; set; } = false;
+
+        /// <summary>
         /// Gets or sets a value indicating whether the room is currently active.
         /// </summary>
         public bool IsActive { get; set; }
